@@ -2,6 +2,7 @@ const express = require("express");
 const bodyparser = require("body-parser");
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
 const path = require("path");
 const notFound = require("./controllers/error");
 const mongoose = require("mongoose");
@@ -31,9 +32,11 @@ app.use("/admin", adminRoutes);
 
 app.use(userRoutes);
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(authRoutes);
 
 app.use(notFound);
+
+app.use(express.static(path.join(__dirname, "public")));
 
 mongoose
   .connect(dbKey, {
