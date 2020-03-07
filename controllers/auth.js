@@ -1,7 +1,6 @@
-exports.getlogin = (req, res, next) => {
-  res.render("admin/edit-product", {
-    path: "/admin/add-product",
-    pageTitle: "Add Product",
-    editing: false
+exports.getLogin = (req, res, next) => {
+  res.render("auth/login", {
+    path: "/login",
+    pageTitle: "Login"
   });
 };
