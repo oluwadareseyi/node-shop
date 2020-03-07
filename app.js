@@ -27,6 +27,7 @@ app.use(async (req, res, next) => {
     console.log(err);
   }
 });
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/admin", adminRoutes);
 
@@ -35,8 +36,6 @@ app.use(userRoutes);
 app.use(authRoutes);
 
 app.use(notFound);
-
-app.use(express.static(path.join(__dirname, "public")));
 
 mongoose
   .connect(dbKey, {
