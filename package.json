@@ -17,6 +17,7 @@
     "ejs": "^3.0.1",
     "express": "^4.17.1",
     "express-handlebars": "^3.0.2",
+    "helmet": "^3.21.3",
     "mongodb": "^3.5.4",
     "mongoose": "^5.9.3",
     "mysql2": "^2.1.0",
