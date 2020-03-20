@@ -8,6 +8,7 @@ const notFound = require("./controllers/error");
 const mongoose = require("mongoose");
 const User = require("./models/user");
 const { dbKey } = require("./util/keys");
+// const morgan = require("morgan");
 const helmet = require("helmet");
 
 const app = express();
@@ -17,6 +18,7 @@ const port = 4000;
 app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(helmet());
+// app.use(morgan("dev"));
 
 app.use(bodyparser.urlencoded({ extended: false }));
 
