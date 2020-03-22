@@ -8,23 +8,40 @@ const notFound = require("./controllers/error");
 const mongoose = require("mongoose");
 const User = require("./models/user");
 const { dbKey } = require("./util/keys");
+const session = require("express-session");
+const mongoDBStore = require("connect-mongodb-session")(session);
 // const morgan = require("morgan");
-const helmet = require("helmet");
+// const helmet = require("helmet");
 
 const app = express();
+const store = new mongoDBStore({
+  uri: dbKey,
+  collection: "sessions"
+});
 
 const port = 4000;
 
 app.set("view engine", "ejs");
 app.set("views", "views");
-app.use(helmet());
+// app.use(helmet());
 // app.use(morgan("dev"));
 
 app.use(bodyparser.urlencoded({ extended: false }));
+app.use(
+  session({
+    secret: "my secret",
+    resave: false,
+    saveUninitialized: false,
+    store: store
+  })
+);
 
 app.use(async (req, res, next) => {
   try {
-    const user = await User.findById("5e6224ed1bb240387c5df891");
+    if (!req.session.user) {
+      return next();
+    }
+    const user = await User.findById(req.session.user._id);
     req.user = user;
     next();
   } catch (err) {
@@ -33,11 +50,11 @@ app.use(async (req, res, next) => {
 });
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(authRoutes);
+
 app.use("/admin", adminRoutes);
 
 app.use(userRoutes);
-
-app.use(authRoutes);
 
 app.use(notFound);
 

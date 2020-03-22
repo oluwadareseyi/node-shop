@@ -8,7 +8,7 @@ exports.getProducts = async (req, res, next) => {
       prods: products,
       path: "/products",
       pageTitle: "Products",
-      isAuthenticated: req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   } catch (err) {
     console.log(err);
@@ -23,7 +23,7 @@ exports.getProduct = async (req, res, next) => {
       product: product,
       path: "/products",
       pageTitle: product.title,
-      isAuthenticated: req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   } catch (err) {
     console.log(err);
@@ -38,7 +38,7 @@ exports.getIndex = async (req, res, next) => {
       prods: products,
       path: "/",
       pageTitle: "Shop",
-      isAuthenticated: req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   } catch (err) {
     console.log(err);
@@ -56,7 +56,7 @@ exports.getCart = async (req, res, next) => {
       products: products,
       path: "/cart",
       pageTitle: "Your Cart",
-      isAuthenticated: req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   } catch (err) {
     console.log(err);
@@ -88,7 +88,7 @@ exports.getOrders = async (req, res, next) => {
       path: "/orders",
       pageTitle: "Your Orders",
       orders: orders,
-      isAuthenticated: req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   } catch (err) {
     console.log(err);
@@ -124,6 +124,6 @@ exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", {
     path: "/checkout",
     pageTitle: "Your Cart",
-    isAuthenticated: req.isLoggedIn
+    isAuthenticated: req.session.isLoggedIn
   });
 };

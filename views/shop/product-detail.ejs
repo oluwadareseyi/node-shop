@@ -4,14 +4,15 @@
     <body>
         <%- include('../includes/navigation.ejs') %>
         <main class="centered">
-            <h1><%= product.title %>!</h1>
+            <h1><%= product.title %></h1>
             <hr>
-            <div detail__image>
-                <img width="20%" src="<%= product.imageUrl %>" alt="<%= product.title %>">
+            <div class="image">
+                <img src="<%= product.imageUrl %>" alt="<%= product.title %>">
             </div>
-            <h2>$<%= product.price %></h2>
+            <h2><%= product.price %></h2>
             <p><%= product.description %></p>
-            <%- include('../includes/add-cart.ejs', {product:product}) %>
-            
+            <% if (isAuthenticated) { %>
+                <%- include('../includes/add-to-cart.ejs', {product: product}) %>
+            <% } %>
         </main>
         <%- include('../includes/end.ejs') %>
