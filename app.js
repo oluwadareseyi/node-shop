@@ -11,6 +11,7 @@ const { dbKey } = require("./util/keys");
 const session = require("express-session");
 const mongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
+const flash = require("connect-flash");
 // const morgan = require("morgan");
 // const helmet = require("helmet");
 
@@ -39,6 +40,7 @@ app.use(
   })
 );
 app.use(csrfProtection);
+app.use(flash());
 
 app.use(async (req, res, next) => {
   try {
