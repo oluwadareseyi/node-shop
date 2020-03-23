@@ -47,6 +47,7 @@ exports.postSignup = async (req, res, next) => {
     }
 
     await new User({ email, password, cart: { items: [] } }).save();
+    res.redirect("/login");
   } catch (err) {
     console.log(err);
   }
