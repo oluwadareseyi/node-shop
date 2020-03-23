@@ -64,18 +64,6 @@ mongoose
     useUnifiedTopology: true
   })
   .then(() => {
-    User.findOne().then(user => {
-      if (!user) {
-        const user = new User({
-          name: "Seyi",
-          email: "test@test.com",
-          cart: {
-            items: []
-          }
-        });
-        user.save();
-      }
-    });
     console.log("DB connected!");
     app.listen(port, () => console.log(`app running on port ${port}`));
   })

@@ -38,4 +38,16 @@ exports.getSignup = (req, res, next) => {
   });
 };
 
-exports.postSignup = (req, res, next) => {};
+exports.postSignup = async (req, res, next) => {
+  const { email, password, confirmPassword } = req.body;
+  try {
+    const existingUser = await User.findOne({ email: email });
+    if (existingUser) {
+      return res.redirect("/signup");
+    }
+
+    await new User({ email, password, cart: { items: [] } }).save();
+  } catch (err) {
+    console.log(err);
+  }
+};
