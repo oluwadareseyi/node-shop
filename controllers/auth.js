@@ -1,3 +1,4 @@
+const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 exports.getLogin = (req, res, next) => {
   res.render("auth/login", {
@@ -8,8 +9,16 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = async (req, res, next) => {
+  const { email, password } = req.body;
   try {
-    const user = await User.findById("5e6224ed1bb240387c5df891");
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.redirect("/login");
+    }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.redirect("/login");
+    }
     req.session.user = user;
     req.session.isLoggedIn = true;
     await req.session.save();
@@ -45,8 +54,9 @@ exports.postSignup = async (req, res, next) => {
     if (existingUser) {
       return res.redirect("/signup");
     }
+    const hashPass = await bcrypt.hash(password, 12);
 
-    await new User({ email, password, cart: { items: [] } }).save();
+    await new User({ email, password: hashPass, cart: { items: [] } }).save();
     res.redirect("/login");
   } catch (err) {
     console.log(err);

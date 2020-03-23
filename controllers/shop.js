@@ -7,8 +7,7 @@ exports.getProducts = async (req, res, next) => {
     res.render("shop/product-list", {
       prods: products,
       path: "/products",
-      pageTitle: "Products",
-      isAuthenticated: req.session.isLoggedIn
+      pageTitle: "Products"
     });
   } catch (err) {
     console.log(err);
@@ -22,8 +21,7 @@ exports.getProduct = async (req, res, next) => {
     res.render("shop/product-detail", {
       product: product,
       path: "/products",
-      pageTitle: product.title,
-      isAuthenticated: req.session.isLoggedIn
+      pageTitle: product.title
     });
   } catch (err) {
     console.log(err);
@@ -37,8 +35,7 @@ exports.getIndex = async (req, res, next) => {
     res.render("shop/index", {
       prods: products,
       path: "/",
-      pageTitle: "Shop",
-      isAuthenticated: req.session.isLoggedIn
+      pageTitle: "Shop"
     });
   } catch (err) {
     console.log(err);
@@ -55,8 +52,7 @@ exports.getCart = async (req, res, next) => {
     res.render("shop/cart", {
       products: products,
       path: "/cart",
-      pageTitle: "Your Cart",
-      isAuthenticated: req.session.isLoggedIn
+      pageTitle: "Your Cart"
     });
   } catch (err) {
     console.log(err);
@@ -87,8 +83,7 @@ exports.getOrders = async (req, res, next) => {
     res.render("shop/orders", {
       path: "/orders",
       pageTitle: "Your Orders",
-      orders: orders,
-      isAuthenticated: req.session.isLoggedIn
+      orders: orders
     });
   } catch (err) {
     console.log(err);
@@ -106,7 +101,7 @@ exports.postOrders = async (req, res, next) => {
 
   const order = new Order({
     user: {
-      name: req.user.name,
+      email: req.user.email,
       userId: req.user
     },
     products: products
@@ -123,7 +118,6 @@ exports.postOrders = async (req, res, next) => {
 exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", {
     path: "/checkout",
-    pageTitle: "Your Cart",
-    isAuthenticated: req.session.isLoggedIn
+    pageTitle: "Your Cart"
   });
 };
