@@ -1,5 +1,19 @@
+const crypto = require("crypto");
+
 const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
+
 const User = require("../models/user");
+
+const transporter = nodemailer.createTransport(
+  sendgridTransport({
+    auth: {
+      api_key:
+        "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"
+    }
+  })
+);
 exports.getLogin = (req, res, next) => {
   let message = req.flash("error");
   if (message.length > 0) {
@@ -57,7 +71,6 @@ exports.getSignup = (req, res, next) => {
   res.render("auth/signup", {
     path: "/signup",
     pageTitle: "Signup",
-    isAuthenticated: false,
     errorMessage: message
   });
 };
@@ -83,7 +96,55 @@ exports.postSignup = async (req, res, next) => {
 
     await new User({ email, password: hashPass, cart: { items: [] } }).save();
     res.redirect("/login");
+    await transporter.sendMail({
+      to: email,
+      from: "no-reply@nodeshop.com",
+      subject: "Sign Up Suceeded",
+      html: `<h1>You Succesfully signed up!</h1>`
+    });
   } catch (err) {
     console.log(err);
   }
+};
+
+exports.getReset = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+  res.render("auth/reset", {
+    path: "/reset",
+    pageTitle: "Reset Password",
+    errorMessage: message
+  });
+};
+
+exports.postReset = async (req, res, next) => {
+  const { email } = req.body;
+  crypto.randomBytes(32, async (err, buffer) => {
+    if (err) {
+      return res.redirect("/reset");
+    }
+    const token = buffer.toString("hex");
+    const user = await User.findOne({ email });
+    if (!user) {
+      req.flash("error", "No account with that email");
+      return res.redirect("/reset");
+    }
+    user.resetToken = token;
+    user.resetTokenExpiration = Date.now() + 3600000;
+    await user.save();
+    res.redirect("/");
+    await transporter.sendMail({
+      to: email,
+      from: "no-reply@nodeshop.com",
+      subject: "Password reset",
+      html: `
+      <p>You requested a password reset</p>
+      <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password</p>
+      `
+    });
+  });
 };
