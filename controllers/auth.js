@@ -44,7 +44,7 @@ exports.postLogin = async (req, res, next) => {
     req.session.user = user;
     req.session.isLoggedIn = true;
     await req.session.save();
-    await res.redirect("/");
+    res.redirect("/");
   } catch (err) {
     console.log(err);
   }
@@ -143,8 +143,56 @@ exports.postReset = async (req, res, next) => {
       subject: "Password reset",
       html: `
       <p>You requested a password reset</p>
-      <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password</p>
+      <p>Click this <a href="http://localhost:4000/reset/${token}">link</a> to set a new password</p>
       `
     });
   });
+};
+
+exports.getNewPassword = async (req, res, next) => {
+  const token = req.params.token;
+
+  try {
+    const user = await User.findOne({
+      resetToken: token,
+      resetTokenExpiration: { $gt: Date.now() }
+    });
+
+    let message = req.flash("error");
+    if (message.length > 0) {
+      message = message[0];
+    } else {
+      message = null;
+    }
+    res.render("auth/new-password", {
+      path: "/new-password",
+      pageTitle: "Reset Password",
+      errorMessage: message,
+      userId: user._id.toString(),
+      passwordToken: token
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.postNewPassword = async (req, res, next) => {
+  const { password, passwordToken, userId } = req.body;
+  try {
+    const user = await User.findById({
+      _id: userId,
+      resetToken: passwordToken,
+      resetTokenExpiration: { $gt: Date.now() }
+    });
+
+    const hashPass = await bcrypt.hash(password, 12);
+
+    user.password = hashPass;
+    user.resetToken = undefined;
+    user.resetTokenExpiration = undefined;
+    await user.save();
+    res.redirect("/login");
+  } catch (err) {
+    console.log(err);
+  }
 };
