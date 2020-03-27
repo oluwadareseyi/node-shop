@@ -10,19 +10,32 @@
         <% if (errorMessage) { %>
             <div class="user-message user-message--error"><%= errorMessage %></div>
             <% } %>
-        <form class="login-form" action="/signup" method="POST">
+        <form novalidate class="login-form" action="/signup" method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
             <div class="form-control">
                 <label for="email">E-Mail</label>
-                <input type="email" name="email" id="email">
+                <input
+                class="<%= validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>" 
+                type="email" 
+                value="<%= oldInput.email %>" 
+                name="email" 
+                id="email">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password">
+                <input
+                class="<%= validationErrors.find(e => e.param === 'password') ? 'invalid' : '' %>" 
+                type="password" 
+                name="password" 
+                id="password">
             </div>
             <div class="form-control">
                 <label for="confirmPassword">Confirm Password</label>
-                <input type="password" name="confirmPassword" id="confirmPassword">
+                <input
+                class="<%= validationErrors.find(e => e.param === 'confirmPassword') ? 'invalid' : '' %>" 
+                type="password" 
+                name="confirmPassword" 
+                id="confirmPassword">
             </div>
             <button class="btn" type="submit">Sign Up</button>
         </form>
