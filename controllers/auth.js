@@ -48,7 +48,7 @@ exports.postLogin = async (req, res, next) => {
       return res.status(422).render("auth/login", {
         path: "/login",
         pageTitle: "Login",
-        errorMessage: "Invalid email",
+        errorMessage: "Wrong email",
         oldInput: { email, password },
         validationErrors: [{ param: "email" }]
       });
@@ -68,7 +68,9 @@ exports.postLogin = async (req, res, next) => {
     await req.session.save();
     res.redirect("/");
   } catch (err) {
-    console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
   }
 };
 
@@ -79,7 +81,9 @@ exports.postLogout = async (req, res, next) => {
       res.redirect("/");
     });
   } catch (err) {
-    console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
   }
 };
 
@@ -133,7 +137,9 @@ exports.postSignup = async (req, res, next) => {
       html: `<h1>You Succesfully signed up!</h1>`
     });
   } catch (err) {
-    console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
   }
 };
 
@@ -202,7 +208,9 @@ exports.getNewPassword = async (req, res, next) => {
       passwordToken: token
     });
   } catch (err) {
-    console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
   }
 };
 
@@ -223,6 +231,8 @@ exports.postNewPassword = async (req, res, next) => {
     await user.save();
     res.redirect("/login");
   } catch (err) {
-    console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
   }
 };

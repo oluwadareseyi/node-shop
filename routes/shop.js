@@ -21,6 +21,8 @@ routes.post("/create-order", isAuth, shopController.postOrders);
 routes.post("/cart-delete-item", isAuth, shopController.deleteCart);
 
 routes.get("/orders", isAuth, shopController.getOrders);
+
+routes.get("/orders/:orderId", isAuth, shopController.getInvoice);
 // routes.get("/checkout", shopController.getCheckout);
 
 module.exports = routes;

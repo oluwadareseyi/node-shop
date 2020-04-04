@@ -1,5 +1,8 @@
 const Product = require("../models/product");
 const Order = require("../models/order");
+const fs = require("fs");
+const path = require("path");
+const PDFDocument = require("pdfkit");
 
 exports.getProducts = async (req, res, next) => {
   try {
@@ -120,4 +123,72 @@ exports.getCheckout = (req, res, next) => {
     path: "/checkout",
     pageTitle: "Your Cart"
   });
+};
+
+exports.getInvoice = async (req, res, next) => {
+  const orderId = req.params.orderId;
+
+  const order = await Order.findById(orderId);
+
+  if (!order) {
+    return next(new Error("No orders Found"));
+  }
+
+  if (!order.user.userId.toString() === req.user._id.toString()) {
+    return next(new Error("unauthorized"));
+  }
+  const invoiceName = "invoice-" + orderId + ".pdf";
+  const invoicePath = path.join("data", "invoices", invoiceName);
+
+  const pdfDoc = new PDFDocument();
+  res.contentType("application/pdf");
+
+  pdfDoc.pipe(fs.createWriteStream(invoicePath));
+  pdfDoc.pipe(res);
+
+  pdfDoc.fontSize(26).text(`Invoice ${orderId}`, {
+    underline: true
+  });
+
+  pdfDoc.text("---------------------------");
+
+  let totalPrice = 0;
+  order.products.forEach(product => {
+    totalPrice += product.quantity * product.product.price;
+    pdfDoc
+      .fontSize(14)
+      .text(
+        `${product.product.title} - ${product.quantity} * ${
+          product.product.price
+        } = ${product.quantity * product.product.price}`
+      );
+  });
+
+  pdfDoc.text("---------------");
+
+  pdfDoc.fontSize(20).text(`Total Price: ${totalPrice}`);
+
+  pdfDoc.end();
+
+  // const file = fs.createReadStream(invoicePath);
+
+  // file.pipe(res);
+
+  // fs.readFile(invoicePath, (err, data) => {
+  //   if (err) {
+  //     console.log(err);
+  //     return next(err);
+  //   }
+
+  //   // console.log(orderId);
+  // });
+
+  // const data = fs.readFileSync(`data/invoices/${invoiceName}`);
+
+  // res.setHeader(
+  //   "Content-Disposition",
+  //   'attachment: filename="' + invoiceName + '"'
+  // );
+  // res.contentDisposition();
+  // res.send(data);
 };
